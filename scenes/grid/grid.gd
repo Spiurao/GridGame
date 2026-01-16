@@ -1,21 +1,32 @@
 class_name Grid
 extends Node2D
 
+signal grid_is_changing
+
 const SEPARATOR_WIDTH = 4
 
 @export var height := 10
 @export var width := 8
 
+var is_changing := false
+
 func _ready():
 	generate_random_grid()
 
 func _process(delta):
-	pass
+	if is_changing:
+		var cells := get_tree().get_nodes_in_group("cells")
+		is_changing = cells.any(
+			func(cell): return cell.get_element().is_moving if cell.get_element() else false)
+
+		if not is_changing:
+			emit_signal("grid_is_changing", false)
 
 func generate_random_grid() -> void:
 	for i in range(width):
 		for j in range(height):
 			var cell := SceneFactory.create_cell(Vector2i(i,j), SEPARATOR_WIDTH, _cell_clicked)
+			connect("grid_is_changing", cell._on_grid_change_set_accepts_inputs)
 
 			add_child(cell)
 
@@ -32,6 +43,7 @@ func generate_grid_from_file(file_path):
 		else:
 			var cell := SceneFactory.create_cell_with_element(Vector2i(i,j), int(element_id),\
 						SEPARATOR_WIDTH, _cell_clicked)
+			connect("grid_is_changing", cell._on_grid_change_set_accepts_inputs)
 
 			add_child(cell)
 			i += 1
@@ -101,3 +113,5 @@ func _cell_clicked(cell: Cell) -> void:
 	delete_same_type_adjacent_elements(cell.coordinates, cell.get_element().category, {})
 	await get_tree().process_frame #TODO delete (is for debugging purposes)
 	drop_elements()
+	is_changing = true
+	emit_signal("grid_is_changing", is_changing)
