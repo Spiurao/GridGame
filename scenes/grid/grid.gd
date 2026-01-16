@@ -37,6 +37,9 @@ func generate_grid_from_file(file_path):
 			i += 1
 	height = j
 
+func get_cell(coordinates: Vector2i) -> Cell:
+	return get_node_or_null("%s" % coordinates)
+
 #TODO implement behavior when a cell is clicked
 func _cell_clicked(cell: Cell) -> void:
 	pass
