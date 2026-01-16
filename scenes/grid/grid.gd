@@ -37,9 +37,24 @@ func generate_grid_from_file(file_path):
 			i += 1
 	height = j
 
+func delete_same_type_adjacent_elements(coordinates: Vector2i, element_type: String,\
+			visited: Dictionary) -> void:
+	var cell := get_cell(coordinates)
+
+	if cell and cell.get_element() and not visited.has(cell)\
+		and cell.get_element().category == element_type:
+
+		cell.delete_element()
+		visited[cell] = true
+
+		delete_same_type_adjacent_elements(coordinates + Vector2i(1,0), element_type, visited)
+		delete_same_type_adjacent_elements(coordinates + Vector2i(-1,0), element_type, visited)
+		delete_same_type_adjacent_elements(coordinates + Vector2i(0,1), element_type, visited)
+		delete_same_type_adjacent_elements(coordinates + Vector2i(0,-1), element_type, visited)
+
 func get_cell(coordinates: Vector2i) -> Cell:
 	return get_node_or_null("%s" % coordinates)
 
 #TODO implement behavior when a cell is clicked
 func _cell_clicked(cell: Cell) -> void:
-	pass
+	delete_same_type_adjacent_elements(cell.coordinates, cell.get_element().category, {})
