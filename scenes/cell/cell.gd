@@ -1,6 +1,8 @@
 class_name Cell
 extends Node2D
 
+signal cell_clicked
+
 var coordinates : Vector2i
 var is_empty := true
 
@@ -31,3 +33,8 @@ func get_element() -> Element:
 func delete_element() -> void:
 	$Element.queue_free()
 	is_empty = true
+
+
+func _on_area_2d_input_event(_viewport, event, _shape_idx) -> void:
+	if event.is_action_pressed("click") and get_element():
+		emit_signal("cell_clicked", self)
