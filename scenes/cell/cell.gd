@@ -5,10 +5,10 @@ signal cell_clicked
 
 var coordinates : Vector2i
 var is_empty := true
+var input_disabled := false
 
-# Called when the node enters the scene tree for the first time.
 func _ready():
-	pass # Replace with function body.
+	add_to_group("cells")
 
 func initialize(coord: Vector2i, separation_offset: int, _on_clicked_callback: Callable) -> void:
 	var element := SceneFactory.generate_random_element()
@@ -54,6 +54,10 @@ func swap_elements(cell: Cell) -> void:
 	is_empty = get_element() == null
 	cell.is_empty = cell.get_element() == null
 
+func _on_grid_change_set_accepts_inputs(value: bool) -> void:
+	input_disabled = value
+
 func _on_area_2d_input_event(_viewport, event, _shape_idx) -> void:
-	if event.is_action_pressed("click") and get_element():
-		emit_signal("cell_clicked", self)
+	if not input_disabled:
+		if event.is_action_pressed("click") and get_element():
+			emit_signal("cell_clicked", self)
