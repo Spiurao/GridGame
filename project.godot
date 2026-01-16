@@ -11,8 +11,13 @@ config_version=5
 [application]
 
 config/name="Smoller"
+run/main_scene="uid://kxtdk8ctuujy"
 config/features=PackedStringArray("4.5", "Mobile")
 config/icon="res://icon.svg"
+
+[autoload]
+
+SceneFactory="*res://scripts/scene_factory.gd"
 
 [debug]
 
