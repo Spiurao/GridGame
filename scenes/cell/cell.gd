@@ -25,6 +25,9 @@ func initialize_with_element(coord: Vector2i, element: Element, separation_offse
 	is_empty = false
 	add_child(element)
 
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(delta):
-	pass
+func get_element() -> Element:
+	return get_node_or_null("Element")
+
+func delete_element() -> void:
+	$Element.queue_free()
+	is_empty = true
