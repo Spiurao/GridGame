@@ -8,19 +8,16 @@ const SEPARATOR_WIDTH = 4
 @export var height := 10
 @export var width := 8
 
-var is_changing := false
+var cells : Array[Node]
+
+# idea : chain elements manually, the more the better
+# to make the player link enemy elements, make it a threat : too many
+# adjacent enemy elements will blow up (you get 1 turn to prevent that or something)
 
 func _ready():
 	generate_random_grid()
+	cells = get_tree().get_nodes_in_group("cells")
 
-func _process(delta):
-	if is_changing:
-		var cells := get_tree().get_nodes_in_group("cells")
-		is_changing = cells.any(
-			func(cell): return cell.get_element().is_moving if cell.get_element() else false)
-
-		if not is_changing:
-			emit_signal("grid_is_changing", false)
 
 func generate_random_grid() -> void:
 	for i in range(width):
@@ -108,10 +105,12 @@ func drop_elements() -> void:
 func get_cell(coordinates: Vector2i) -> Cell:
 	return get_node_or_null("%s" % coordinates)
 
+func is_changing() -> bool:
+	return cells.any(
+			func(cell): return cell.get_element().is_moving if cell.get_element() else false)
+
 #TODO implement behavior when a cell is clicked
 func _cell_clicked(cell: Cell) -> void:
 	delete_same_type_adjacent_elements(cell.coordinates, cell.get_element().category, {})
 	await get_tree().process_frame #TODO delete (is for debugging purposes)
 	drop_elements()
-	is_changing = true
-	emit_signal("grid_is_changing", is_changing)

@@ -1,6 +1,7 @@
-[gd_scene load_steps=2 format=3 uid="uid://kxtdk8ctuujy"]
+[gd_scene load_steps=3 format=3 uid="uid://kxtdk8ctuujy"]
 
 [ext_resource type="Script" uid="uid://b6n425dmaaao3" path="res://scenes/grid/grid.gd" id="1_io313"]
+[ext_resource type="Script" uid="uid://ldyi2srhuu4" path="res://scenes/grid/grid_state_machine.gd" id="2_oi66c"]
 
 [node name="Grid" type="Node2D"]
 script = ExtResource("1_io313")
@@ -8,3 +9,6 @@ script = ExtResource("1_io313")
 [node name="Camera2D" type="Camera2D" parent="."]
 offset = Vector2(-50, -50)
 anchor_mode = 0
+
+[node name="StateMachine" type="Node" parent="."]
+script = ExtResource("2_oi66c")
