@@ -108,7 +108,7 @@ func get_cell(coordinates: Vector2i) -> Cell:
 	if coordinates.y >= height or coordinates.x < 0:
 		return null
 	
-	return cells[coordinates.x * height + coordinates.y]
+	return cells[coordinates.x * height + coordinates.y] # matrix projected in 1D array
 
 func is_changing() -> bool:
 	return cells.any(
