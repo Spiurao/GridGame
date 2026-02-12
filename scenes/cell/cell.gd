@@ -4,17 +4,17 @@ extends Node2D
 signal cell_clicked
 
 var coordinates : Vector2i
-var is_empty := true
 var input_disabled := false
+var element : Element
 
 func _ready():
 	add_to_group("cells")
 
 func initialize(coord: Vector2i, separation_offset: int, _on_clicked_callback: Callable) -> void:
-	var element := SceneFactory.generate_random_element()
-	initialize_with_element(coord, element, separation_offset, _on_clicked_callback)
+	var random_element := SceneFactory.generate_random_element()
+	initialize_with_element(coord, random_element, separation_offset, _on_clicked_callback)
 
-func initialize_with_element(coord: Vector2i, element: Element, separation_offset: int,\
+func initialize_with_element(coord: Vector2i, el: Element, separation_offset: int,\
 			_on_clicked_callback: Callable) -> void:
 	connect("cell_clicked", _on_clicked_callback)
 
@@ -22,17 +22,20 @@ func initialize_with_element(coord: Vector2i, element: Element, separation_offse
 	position = coord * (SceneFactory.SPRITE_SIZE + separation_offset)
 
 	coordinates = coord
-	element.name = "Element"
+	el.name = "Element"
 
-	is_empty = false
-	add_child(element)
+	add_child(el)
+	element = el
 
 func get_element() -> Element:
-	return get_node_or_null("Element")
+	return element
 
 func delete_element() -> void:
 	$Element.queue_free()
-	is_empty = true
+	element = null
+
+func is_empty() -> bool:
+	return element == null
 
 ## Swaps two elements and triggers the movement animation
 func swap_elements(cell: Cell) -> void:
@@ -51,8 +54,8 @@ func swap_elements(cell: Cell) -> void:
 		old_element.global_position = global_position
 		old_element.move_to(cell.global_position)
 
-	is_empty = get_element() == null
-	cell.is_empty = cell.get_element() == null
+	element = new_element
+	cell.element = old_element
 
 func _on_grid_change_set_accepts_inputs(value: bool) -> void:
 	input_disabled = value

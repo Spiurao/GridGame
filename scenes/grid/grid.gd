@@ -8,7 +8,7 @@ const SEPARATOR_WIDTH = 4
 @export var height := 10
 @export var width := 8
 
-var cells : Array[Node]
+var cells : Array[Cell] = []
 
 # idea : chain elements manually, the more the better
 # to make the player link enemy elements, make it a threat : too many
@@ -16,7 +16,7 @@ var cells : Array[Node]
 
 func _ready():
 	generate_random_grid()
-	cells = get_tree().get_nodes_in_group("cells")
+	cells.append_array(get_tree().get_nodes_in_group("cells")) # ew but no choice :/
 
 
 func generate_random_grid() -> void:
@@ -64,7 +64,7 @@ func delete_same_type_adjacent_elements(coordinates: Vector2i, element_type: Str
 func drop_elements() -> void:
 	for i in range(width-1, -1, -1):
 		for j in range(height-1, -1, -1):
-			if get_cell(Vector2i(i,j)).is_empty:
+			if get_cell(Vector2i(i,j)).is_empty():
 				# Making all elements above fall down
 				var k := j
 				var empty_column_size := 0
@@ -76,7 +76,7 @@ func drop_elements() -> void:
 					k -= 1
 					empty_column_size += 1
 					hanging_cell = get_cell(Vector2i(i,k))
-					found_element = not hanging_cell.is_empty
+					found_element = not hanging_cell.is_empty()
 
 					if found_element: # find the end of the block of elements that will fall
 						var elements_block_size := 0
@@ -94,7 +94,7 @@ func drop_elements() -> void:
 						# by spaces in the current column
 						while l > 0 and not found_next_empty_space:
 							l -= 1 #-1 so k-l = 1 meaning we have only the top element to move
-							found_next_empty_space = get_cell(Vector2i(i,l)).is_empty
+							found_next_empty_space = get_cell(Vector2i(i,l)).is_empty()
 
 						if found_next_empty_space or l == 0: # l=0 means we've reached the top
 							elements_block_size = k-l
@@ -103,7 +103,12 @@ func drop_elements() -> void:
 								.swap_elements(get_cell(Vector2i(i,j-empty_column_size-m)))
 
 func get_cell(coordinates: Vector2i) -> Cell:
-	return get_node_or_null("%s" % coordinates)
+	if coordinates.x >= width or coordinates.x < 0:
+		return null
+	if coordinates.y >= height or coordinates.x < 0:
+		return null
+	
+	return cells[coordinates.x * height + coordinates.y]
 
 func is_changing() -> bool:
 	return cells.any(
